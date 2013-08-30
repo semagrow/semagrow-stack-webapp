@@ -59,7 +59,7 @@
         <repository>
             <id>swc-semagrow</id>
             <name>SWC SemaGrow Repository</name>
-            <url>https://semagrow.semantic-web.at/mvn</url>
+            <url>http://semagrow.semantic-web.at/mvn</url>
             <snapshots>
                 <updatePolicy>always</updatePolicy>
                 <enabled>true</enabled>
