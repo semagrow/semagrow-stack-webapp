@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <author>Jürgen Jakobitsch</author>
+        <title>SemaGrow-Stack-Webapp - Building</title>
+    </properties>
+    <meta name="keyword" content="semagrow, build"/>
+    <body>
+        <section name="Building">
+            <p>   
+                Welcome 2 the SemaGrow-Stack-Webapp :: Building.
+            </p>
+            <p>
+                Building the SemaGrow-Stack is done using the following hierarchical workflow                
+                <ol>
+                    <li>Build custom c-index (regex)</li>
+                    <li>Build custom Postgres database using above index</li>
+                    <li>Build java modules</li>
+                    <li>Build SemaGrow-Stack-Webapp inclusive of a tomcat</li>
+                    <li>Build Debian/RPM packages</li>
+                </ol>
+            </p>
+        </section>        
+    </body>
+</document>
