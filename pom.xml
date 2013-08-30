@@ -50,6 +50,23 @@
         </mailingList>
     </mailingLists>
       
+    <!-- REPOSITORIES -->
+    <repositories>
+        <repository>
+            <id>maven-central</id>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>      
+        <repository>
+            <id>swc-semagrow</id>
+            <name>SWC SemaGrow Repository</name>
+            <url>https://semagrow.semantic-web.at/mvn</url>
+            <snapshots>
+                <updatePolicy>always</updatePolicy>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>                
+    </repositories>
+          
     <scm>
         <connection>scm:git:git://github.com/semagrow/semagrow-stack-webapp.git</connection>    
         <url>https://github.com/semagrow/semagrow-stack-webapp</url>
@@ -98,29 +115,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-repository-api</artifactId>
-            <version>2.6.10</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-sail-memory</artifactId>
-            <version>2.6.10</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-repository-sail</artifactId>
-            <version>2.6.10</version>
-            <type>jar</type>
-        </dependency>                
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.14</version> 
-            <scope>provided</scope>           
-        </dependency> 
+            <groupId>eu.semagrow.stack</groupId>
+            <artifactId>semagrow-stack-modules</artifactId>
+            <version>1.0.0-rc1</version>            
+        </dependency>        
     </dependencies>
     
     <profiles>
