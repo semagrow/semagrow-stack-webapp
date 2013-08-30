@@ -53,18 +53,18 @@
     <!-- REPOSITORIES -->
     <repositories>
         <repository>
-            <id>maven-central</id>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>      
-        <repository>
             <id>swc-semagrow</id>
             <name>SWC SemaGrow Repository</name>
-            <url>http://semagrow.semantic-web.at/mvn</url>
+            <url>http://semagrow.semantic-web.at/mvn</url>          
             <snapshots>
                 <updatePolicy>always</updatePolicy>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>                
+        </repository>         
+        <repository>
+            <id>maven-central</id>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>                     
     </repositories>
           
     <scm>
@@ -117,7 +117,8 @@
         <dependency>
             <groupId>eu.semagrow.stack</groupId>
             <artifactId>semagrow-stack-modules</artifactId>
-            <version>1.0.0-rc1</version>            
+            <version>1.0.0-rc1</version>                        
+            <type>pom</type>
         </dependency>        
     </dependencies>
     
