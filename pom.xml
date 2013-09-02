@@ -71,13 +71,16 @@
         <repository>
             <id>maven-central</id>
             <url>http://repo1.maven.org/maven2</url>
-        </repository>
-        <repository>
+        </repository>        
+    </repositories>
+    
+    <pluginRepositories>
+        <pluginRepository>
             <id>maven.tinyjee.org</id>
             <url>http://maven.tinyjee.org</url>
-        </repository>                                                          
-    </repositories>
-          
+        </pluginRepository>
+    </pluginRepositories>
+              
     <scm>
         <connection>scm:git:git://github.com/semagrow/semagrow-stack-webapp.git</connection>    
         <url>https://github.com/semagrow/semagrow-stack-webapp</url>
