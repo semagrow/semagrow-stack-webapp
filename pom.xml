@@ -71,7 +71,11 @@
         <repository>
             <id>maven-central</id>
             <url>http://repo1.maven.org/maven2</url>
-        </repository>                     
+        </repository>
+        <repository>
+            <id>maven.tinyjee.org</id>
+            <url>http://maven.tinyjee.org</url>
+        </repository>                                                          
     </repositories>
           
     <scm>
