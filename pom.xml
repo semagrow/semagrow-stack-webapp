@@ -9,6 +9,13 @@
     <packaging>war</packaging>
     <url>http://semagrow.eu</url>
     
+    <properties>   
+        <build.properties>src/properties/build.properties</build.properties>
+        <tomcat.properties>src/properties/tomcat.properties</tomcat.properties>
+        <distribution.site>/var/www/docs</distribution.site>
+        <distribution.mvn>/var/www/mvn</distribution.mvn>
+    </properties>
+        
     <organization>
         <name>SemaGrow - FP7</name>
         <url>http://www.semagrow.eu</url>
@@ -55,7 +62,7 @@
         <repository>
             <id>swc-semagrow</id>
             <name>SWC SemaGrow Repository</name>
-            <url>http://semagrow.semantic-web.at/mvn</url>          
+            <url>http://semagrow.semantic-web.at/mvn/</url>          
             <snapshots>
                 <updatePolicy>always</updatePolicy>
                 <enabled>true</enabled>
@@ -72,35 +79,17 @@
         <url>https://github.com/semagrow/semagrow-stack-webapp</url>
     </scm>
     
-    <properties>   
-        <build.properties>src/properties/build.properties</build.properties>
-        <tomcat.properties>src/properties/tomcat.properties</tomcat.properties>
-    </properties>
-    
-    <reporting>       
-        <plugins>
-            <plugin>                
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.7</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>index</report>
-                            <report>summary</report>
-                            <report>project-team</report>
-                            <report>mailing-list</report>
-                            <report>license</report>
-                            <report>scm</report>
-                            <report>issue-tracking</report>
-                            <report>dependencies</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>            
-        </plugins>
-    </reporting>
-    
+    <distributionManagement>
+        <site>
+            <id>online-documentation</id>
+            <url>file://${distribution.site}</url>
+        </site>
+        <repository>
+            <id>online-mvn-repository</id>
+            <url>file://${distribution.mvn}</url>
+        </repository>
+    </distributionManagement>
+           
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -124,8 +113,34 @@
     
     <profiles>
         <profile>
+            <id>documentation</id>
+            <reporting>       
+                <plugins>
+                    <plugin>                
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-project-info-reports-plugin</artifactId>
+                        <version>2.7</version>
+                        <reportSets>
+                            <reportSet>
+                                <reports>
+                                    <report>index</report>
+                                    <report>summary</report>
+                                    <report>project-team</report>
+                                    <report>mailing-list</report>
+                                    <report>license</report>
+                                    <report>scm</report>
+                                    <report>issue-tracking</report>
+                                    <report>dependencies</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>            
+                </plugins>
+            </reporting>
+        </profile>
+        <profile>
             <id>assembly</id>
-            <!--<activation></activation>-->
+            <!--<activation></activation>-->            
             <build>
                 <plugins>                    
                     <plugin>
@@ -171,11 +186,12 @@
                                 <descriptor>src/assembly/tomcat-distribution.xml</descriptor>
                             </descriptors>
                         </configuration>
-                    </plugin>                                    
+                    </plugin>
                 </plugins>
             </build>
         </profile>
-    </profiles>    
+    </profiles>  
+  
     <build>    
         <pluginManagement>
             <plugins>
