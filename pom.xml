@@ -12,7 +12,7 @@
     <properties>   
         <build.properties>src/properties/build.properties</build.properties>
         <tomcat.properties>src/properties/tomcat.properties</tomcat.properties>
-        <distribution.site>/var/www/docs</distribution.site>
+        <distribution.site>/var/www/docs/${project.artifactId}/${project.version}</distribution.site>
         <distribution.mvn>/var/www/mvn</distribution.mvn>
     </properties>
         
