@@ -120,13 +120,44 @@
     
     <profiles>
         <profile>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-site-plugin</artifactId>
+                            <version>3.3</version>
+                        </plugin>                                
+                    </plugins>
+                </pluginManagement>
+            </build>
             <id>documentation</id>
-            <reporting>       
+            <reporting>                       
                 <plugins>
-                    <plugin>                
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>                            
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jxr-plugin</artifactId>
+                        <version>2.1</version>
+                    </plugin>
+
+                    <!-- SUREFIRE -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-report-plugin</artifactId>
+                        <version>2.0</version>
+                        <configuration>
+                        </configuration>
+                    </plugin>                     
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-project-info-reports-plugin</artifactId>
-                        <version>2.7</version>
+                        <version>2.4</version>
                         <reportSets>
                             <reportSet>
                                 <reports>
@@ -141,7 +172,7 @@
                                 </reports>
                             </reportSet>
                         </reportSets>
-                    </plugin>            
+                    </plugin>                                                                              
                 </plugins>
             </reporting>
         </profile>
@@ -199,26 +230,7 @@
         </profile>
     </profiles>  
   
-    <build>    
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.3</version>
-                    <configuration>
-                        <port>8080</port>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.tinyjee</groupId>
-                            <artifactId>doxia-include-macro</artifactId>
-                            <version>1.0</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-            </plugins>
-        </pluginManagement>              
+    <build>                 
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
