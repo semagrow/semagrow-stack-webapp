@@ -12,7 +12,7 @@
     <properties>   
         <build.properties>src/properties/build.properties</build.properties>
         <tomcat.properties>src/properties/tomcat.properties</tomcat.properties>
-        <distribution.site>/var/www/docs/${project.artifactId}/${project.version}</distribution.site>
+        <distribution.site>/var/www/docs/${project.artifactId}/${project.version}</distribution.site>        
         <distribution.mvn>/var/www/mvn</distribution.mvn>
     </properties>
         
@@ -85,18 +85,18 @@
         <connection>scm:git:git://github.com/semagrow/semagrow-stack-webapp.git</connection>    
         <url>https://github.com/semagrow/semagrow-stack-webapp</url>
     </scm>
-    
+           
     <distributionManagement>
         <site>
-            <id>online-documentation</id>
+            <id>online-site-repository</id>
             <url>file://${distribution.site}</url>
-        </site>
+        </site>        
         <repository>
             <id>online-mvn-repository</id>
             <url>file://${distribution.mvn}</url>
-        </repository>
+        </repository>                
     </distributionManagement>
-           
+                       
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -118,9 +118,10 @@
         </dependency>        
     </dependencies>
     
-    <profiles>
+    <profiles>       
         <profile>
-            <build>
+            <id>semagrow-stack-webapp-documentation</id>
+            <build>               
                 <pluginManagement>
                     <plugins>
                         <plugin>
@@ -129,14 +130,14 @@
                             <version>3.3</version>
                         </plugin>                                
                     </plugins>
-                </pluginManagement>
-            </build>
-            <id>documentation</id>
+                </pluginManagement>                
+            </build>            
             <reporting>                       
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
                         <configuration>                            
                         </configuration>
                     </plugin>
@@ -160,8 +161,7 @@
                         <version>2.4</version>
                         <reportSets>
                             <reportSet>
-                                <reports>
-                                    <report>index</report>
+                                <reports>                                    
                                     <report>summary</report>
                                     <report>project-team</report>
                                     <report>mailing-list</report>
@@ -177,10 +177,9 @@
             </reporting>
         </profile>
         <profile>
-            <id>assembly</id>
-            <!--<activation></activation>-->            
-            <build>
-                <plugins>                    
+            <id>semagrow-stack-webapp-distribution</id>
+            <build>                
+                <plugins>                                                            
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
@@ -231,7 +230,7 @@
     </profiles>  
   
     <build>                 
-        <plugins>
+        <plugins>                 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
@@ -244,13 +243,13 @@
                         </goals>
                         <configuration>                            
                             <files>                                                                
-                                <file>${build.properties}</file>
-                                <file>${tomcat.properties}</file>
+                                <file>${build.properties}</file>                                        
+                                <file>${tomcat.properties}</file>                                                                                
                             </files>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>                                  
+            </plugin>                 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

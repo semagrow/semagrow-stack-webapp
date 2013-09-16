@@ -8,10 +8,7 @@
   <body>
     <menu name="SemaGrow-Stack-Webapp">
       <item name="Introduction" href="index.html"/>      
-      <item name="Building" href="building.html" collapse="false">
-          <item name="Default Build" href="build_default.html" />
-          <item name="Custom Build" href="build_custom.html" />
-      </item>      
+      <item name="Building" href="building.html"/>
     </menu>          
     <menu ref="reports"/>
   </body>

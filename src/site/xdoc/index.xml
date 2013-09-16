@@ -10,64 +10,6 @@
             <p>   
                 Welcome 2 the SemaGrow-Stack-Webapp.            
             </p>
-            <p>
-                SemaGrow-Stack-Webapp's directory structure and default files
-                <ul>
-                    <li>src
-                        <ul>
-                            <li>assembly
-                                <ul>
-                                    <li>tomcat-distribution.xml</li>
-                                </ul>
-                            </li>
-                            <li>main
-                                <ul>
-                                    <li>java</li>
-                                    <li>resources</li>
-                                    <li>webapp</li>
-                                </ul>                                
-                            </li>
-                            <li>properties
-                                <ul>
-                                    <li>build.properties</li>
-                                    <li>tomcat.properties</li>
-                                </ul>
-                            </li>
-                            <li>site
-                                <ul>
-                                    <li>site.xml</li>
-                                    <li>xdoc
-                                        <ul>
-                                            <li>build_custom.xml</li>
-                                            <li>build_default.xml</li>
-                                            <li>index.xml</li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>tomcat
-                                <ul>
-                                    <li>conf
-                                        <ul>
-                                            <li>catalina.properties</li>
-                                            <li>server.xml</li>
-                                        </ul>
-                                    </li>
-                                    <li>domains
-                                        <ul>
-                                            <li>domains
-                                                <ul>
-                                                    <li>localhost</li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </p>
         </section>        
     </body>
 </document>
