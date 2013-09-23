@@ -68,6 +68,57 @@
                 </li>
             </ol>
         </section>
+        <section name="Build Lifecycle bindings">
+            <ol>
+                <li>package
+                    <ol>
+                        <li>validate
+                            <ol>
+                                <li>Read build.properties file</li>
+                                <li>Read tomcat.properties file</li>
+                            </ol>                        
+                        </li>
+                        <li>initialize
+                            <ol>
+                                <li>Download tomcat to target directory</li>
+                                <li>copy src/script/* files to target</li>
+                            </ol>
+                        </li>
+                        <li>package
+                            <ol>
+                                <li>Create tomcat-distribution</li>                                
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+                <li>package
+                    <ol>
+                        <li>validate
+                            <ol>
+                                <li>Read build.properties file</li>
+                                <li>Read tomcat.properties file</li>
+                            </ol>                        
+                        </li>
+                        <li>initialize
+                            <ol>
+                                <li>Download tomcat to target directory</li>
+                                <li>copy src/script/* files to target</li>
+                            </ol>
+                        </li>
+                        <li>package
+                            <ol>
+                                <li>Create tomcat-distribution</li>                                
+                            </ol>
+                        </li>
+                        <li>deploy
+                            <ol>
+                                <li>Deploy according to distribution.mvn settings, see below</li>                                
+                            </ol>
+                        </li>                        
+                    </ol>
+                </li>                
+            </ol>
+        </section>        
         <section name="Building the SemaGrow-Stack-Webapp as a war file (default)">
             To build the SemaGrow-Stack-Webapp war file simply cd into ${semagrow-stack-webapp.root}
             and issue the following command
@@ -102,7 +153,7 @@
             To preview the generated documentation issue the following command in a terminal
             <br/>
 <source>
-    mvn site:run
+    mvn site:run -P semagrow-stack-webapp-documentation
 </source>
             <br/>
             This will run the documentation page on a local jetty at port 8080. The documentation
