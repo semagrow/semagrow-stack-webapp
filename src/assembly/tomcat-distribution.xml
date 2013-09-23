@@ -29,11 +29,7 @@
             <directory>${project.build.directory}/apache-tomcat-${tomcat.version}</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
-                <exclude>**/webapps/docs/**</exclude>
-                <exclude>**/webapps/examples/**</exclude>
-                <exclude>**/webapps/host-manager/**</exclude>
-                <exclude>**/webapps/manager/**</exclude>
-                <exclude>**/webapps/ROOT/**</exclude>
+                <exclude>**/webapps/**</exclude>
             </excludes>
         </fileSet>       
     </fileSets>

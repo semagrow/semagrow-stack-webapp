@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>eu.semagrow.stack</groupId>
+    <groupId>eu.semagrow.stack.webapp</groupId>
     <artifactId>semagrow-stack-webapp</artifactId>    
     <name>semagrow-stack-webapp</name>
     <version>1.0.0-rc1</version>    
