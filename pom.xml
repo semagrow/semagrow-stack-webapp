@@ -111,7 +111,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>eu.semagrow.stack</groupId>
+            <groupId>eu.semagrow.stack.modules</groupId>
             <artifactId>semagrow-stack-modules</artifactId>
             <version>1.0.0-rc1</version>                        
             <type>pom</type>
