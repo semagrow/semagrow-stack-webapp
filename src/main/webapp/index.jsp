@@ -43,11 +43,7 @@
         <div id="header">
             <img id="logo" src="resources/images/logo.png"/>
             <div id="auth">
-                <% if(request.getUserPrincipal()==null){ %>
-                <a href="javascript:SemaGrowPage.login();">login</a>
-                <% } else { %>
-                logged in as <strong><%=request.getUserPrincipal().getName()%></strong> <a href="javascript:SemaGrowPage.logout();">logout</a>
-                <% }%>
+                <jsp:include page="/WEB-INF/jsp/auth/login.jsp" />
             </div>
         </div>
         <div id="content"></div>

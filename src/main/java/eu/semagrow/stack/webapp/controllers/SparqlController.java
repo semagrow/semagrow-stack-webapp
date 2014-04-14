@@ -131,8 +131,14 @@ public class SparqlController {
         response.setContentType("text/plain");
         RepositoryConnection repCon = null;
         try {
-            repCon = this.repository.getConnection();  
-            response.getWriter().append(repCon.prepareTupleQuery(QueryLanguage.SPARQL, query).toString());
+            repCon = this.repository.getConnection();
+            ParsedOperation pO = QueryParserUtil.parseOperation(QueryLanguage.SPARQL, query, null);
+            if(pO instanceof ParsedUpdate){
+                response.getWriter().append(repCon.prepareUpdate(QueryLanguage.SPARQL, query).toString());
+            }
+            if(pO instanceof ParsedQuery){
+                response.getWriter().append(repCon.prepareQuery(QueryLanguage.SPARQL, query).toString());
+            }            
             response.getWriter().flush();
         } finally {
             if(repCon!=null){

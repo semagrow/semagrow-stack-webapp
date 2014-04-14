@@ -20,20 +20,20 @@ public class AuthController {
     @RequestMapping(value="/login", method=RequestMethod.GET)
     public ModelAndView login(HttpServletResponse response) throws IOException{
         ModelAndView mav = new ModelAndView("auth/login");
+        mav.addObject("form", true);
         return mav;
     }
     
     @RequestMapping(value="/authenticate", method=RequestMethod.GET)
-    public void authenticate(HttpServletResponse response, HttpServletRequest request) throws IOException{
-        response.getWriter().print(request.getUserPrincipal());
+    public ModelAndView authenticate(HttpServletResponse response, HttpServletRequest request) throws IOException{
+        ModelAndView mav = new ModelAndView("auth/login");
+        return mav;
     }    
     
     @RequestMapping(value="/logout", method=RequestMethod.GET)
     public void logout(HttpServletResponse response, HttpServletRequest request) throws IOException, ServletException {
-        request.getSession().invalidate();
-        response.sendError(401);
-        response.setStatus(401);        
-        response.addHeader("WWW-Authenticate", "Basic realm='Authentication required'");
-        System.out.println("logout "+request.getUserPrincipal());
+        request.getSession().invalidate();        
+        response.addHeader("WWW-Authenticate", "Basic realm='SemaGrow'");
+        response.setStatus(401);
     }    
 }

@@ -34,6 +34,23 @@ SemaGrowPage = {
         };           
         HttpClient.GET("auth/login", oRequestData, HTTPAccept.HTML);
     },
+    logout: function(){       
+        var oRequestData = {
+            "localData":{
+                "onSuccess":function(oRequestData, response){
+                    document.getElementById("auth").innerHTML=response.responseText;
+                },
+                onError: function(oRequestData, response){
+                    switch(response.status){
+                        case 401:
+                            SemaGrowPage.login();
+                        break;
+                    }
+                }
+            }
+        };           
+        HttpClient.GET("auth/logout", oRequestData, HTTPAccept.HTML);
+    },    
     authenticate: function(){       
         var oRequestData = {
             "localData":{
@@ -46,9 +63,7 @@ SemaGrowPage = {
             }
         };
         var currentUrl = document.location.href.replace("http://","");
-        alert(currentUrl);
         var authUrl = "http://"+document.getElementById("user").value+":"+document.getElementById("pass").value+"@"+currentUrl+"auth/authenticate";
-        alert(authUrl);
         HttpClient.GET(authUrl, oRequestData, HTTPAccept.HTML);
     }    
 };
