@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -14,6 +15,7 @@
         <tomcat.properties>src/properties/tomcat.properties</tomcat.properties>
         <distribution.site>/var/www/docs/${project.artifactId}/${project.version}</distribution.site>        
         <distribution.mvn>/var/www/mvn</distribution.mvn>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
         
     <organization>
@@ -84,6 +86,7 @@
     <scm>
         <connection>scm:git:git://github.com/semagrow/semagrow-stack-webapp.git</connection>    
         <url>https://github.com/semagrow/semagrow-stack-webapp</url>
+        
     </scm>
            
     <distributionManagement>
