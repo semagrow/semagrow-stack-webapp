@@ -1,6 +1,8 @@
 package eu.semagrow.stack.webapp.controllers;
 
 import eu.semagrow.modules.sparqlutils.SparqlUtils;
+import eu.semagrow.stack.modules.api.decomposer.QueryDecompositionException;
+import eu.semagrow.stack.modules.api.query.SemagrowTupleQuery;
 import eu.semagrow.stack.modules.commons.CONSTANTS;
 import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowConfig;
 import java.io.IOException;
@@ -9,6 +11,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowRepositoryConfig;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -18,6 +22,7 @@ import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResultHandlerException;
 import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.parser.ParsedOperation;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedUpdate;
@@ -59,7 +64,7 @@ public class SparqlController {
     public void startUp() throws RepositoryException, RepositoryConfigException {
         //repository = new SailRepository(new MemoryStore());
         //repository.initialize();
-        SailRepositoryConfig repoConfig = new SailRepositoryConfig(new SemagrowConfig());
+        SemagrowRepositoryConfig repoConfig = new SemagrowRepositoryConfig();
         repository = RepositoryRegistry.getInstance().get(repoConfig.getType()).getRepository(repoConfig);
         repository.initialize();
     }
@@ -147,7 +152,41 @@ public class SparqlController {
             }
         }
     }
-        
+
+
+    @RequestMapping(value="/decompose", method=RequestMethod.POST, params={ CONSTANTS.WEBAPP.PARAM_QUERY })
+    public void decompose(HttpServletResponse response, HttpServletRequest request, @RequestParam String query, @RequestParam(defaultValue="") String prefixes)
+            throws IOException, RepositoryException, RepositoryException, MalformedQueryException {
+        if(!prefixes.trim().equals("")){
+            query = prefixes.concat("\n").concat(query);
+        }
+
+        response.setContentType("text/plain");
+        RepositoryConnection repCon = null;
+        try {
+            repCon = this.repository.getConnection();
+            ParsedOperation pO = QueryParserUtil.parseOperation(QueryLanguage.SPARQL, query, null);
+            if(pO instanceof ParsedUpdate){
+                response.getWriter().append(repCon.prepareUpdate(QueryLanguage.SPARQL, query).toString());
+            }
+            if(pO instanceof ParsedQuery){
+                Query q = repCon.prepareQuery(QueryLanguage.SPARQL, query);
+                if (q instanceof SemagrowTupleQuery) {
+                    try {
+                        TupleExpr decomposedExpr = ((SemagrowTupleQuery) q).getDecomposedQuery();
+                        response.getWriter().append(decomposedExpr.toString());
+                    } catch (QueryDecompositionException e) {
+                        response.getWriter().append("Query cannot be decomposed");
+                    }
+                }
+            }
+            response.getWriter().flush();
+        } finally {
+            if(repCon!=null){
+                repCon.close();
+            }
+        }
+    }
     
     
     private void handleQuery(OutputStream out, String accept, Query query)             

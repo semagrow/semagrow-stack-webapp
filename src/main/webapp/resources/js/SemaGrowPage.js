@@ -156,6 +156,20 @@ SemaGrowSparql = {
         };
         HttpClient.POST("sparql/explain", oRequestData, HTTPAccept.HTML);         
     },
+    explainDecomposedQuery: function(){
+        var oRequestData = {
+            "localData":{
+                "onSuccess":function(oRequestData, response){
+                    document.getElementById("sparqlResponse").innerHTML="<pre>"+response.responseText+"</pre>";
+                },
+                onError: function(oRequestData, response){
+                    document.getElementById("sparqlResponse").innerHTML=response.responseText;
+                },
+                "form":"sparqlQuery"
+            }
+        };
+        HttpClient.POST("sparql/decompose", oRequestData, HTTPAccept.HTML);
+    },
     runSparqlQuery: function(){
         var oRequestData = {
             "localData":{
