@@ -9,15 +9,20 @@
         <title>SemaGrow-Stack</title>
         <link rel="stylesheet" type="text/css" href="resources/styles/style.css" />
         <link rel="stylesheet" type="text/css" href="resources/styles/tabview.css" />
+        <link rel="stylesheet" type="text/css" href="resources/styles/datatable.css" />
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.9.0/build/tabview/assets/skins/sam/tabview.css">
+        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.9.0/build/datatable/assets/skins/sam/datatable.css" />
         <script src="http://yui.yahooapis.com/2.9.0/build/yahoo/yahoo-min.js" ></script>
         <script src="http://yui.yahooapis.com/2.9.0/build/event/event-min.js" ></script>
         <script src="http://yui.yahooapis.com/2.9.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+        <script src="http://yui.yahooapis.com/2.9.0/build/datasource/datasource-min.js"></script>
         <script src="http://yui.yahooapis.com/2.9.0/build/connection/connection_core-min.js"></script>
         <script src="http://yui.yahooapis.com/2.9.0/build/connection/connection-min.js"></script>
         <script src="http://yui.yahooapis.com/2.9.0/build/yahoo/yahoo-min.js"></script>
         <script src="http://yui.yahooapis.com/2.9.0/build/element/element-min.js"></script>
         <script src="http://yui.yahooapis.com/2.9.0/build/tabview/tabview-min.js"></script>
+        <script src="http://yui.yahooapis.com/2.9.0/build/event-delegate/event-delegate-min.js"></script>
+        <script src="http://yui.yahooapis.com/2.9.0/build/datatable/datatable-min.js"></script>        
         <script src="resources/js/CONSTANTS.js"></script>
         <script src="resources/js/openrdf/model/Model.js"></script>
         <script src="resources/js/openrdf/vocabulary/VOCAB.js"></script>

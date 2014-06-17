@@ -137,10 +137,46 @@ SemaGrowSparql = {
             "localData":{
                 "onSuccess":function(oRequestData, response){
                     document.getElementById("sparqlContent").innerHTML=response.responseText;
+                    SemaGrowSparql.loadSparqlSamples();
                 }
             }
         };                    
         HttpClient.GET("sparql",oRequestData, HTTPAccept.HTML);         
+    },
+    loadSparqlSamples:function(){
+        var oRequestData = {
+            "localData":{
+                "onSuccess":function(oRequestData, response){
+                    document.getElementById("sparqlSamplesContainer").innerHTML=response.responseText;
+                    var columnDefs = [
+                                {key:"Title",label:"Title",sortable:true},
+                                {key:"Description",label:"Description", sortable:true},
+                                {key:"SPARQL Query",label:"SPARQL Query",sortable:true}                                
+                            ];
+                    var dataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("sparqlSamples"));
+                        dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE; 
+                        dataSource.responseSchema = {
+                                    fields: [{key:"Title"},
+                                            {key:"Description"},
+                                            {key:"SPARQL Query"}
+                                    ]
+                                };                        
+                    var dataTable = new YAHOO.widget.DataTable("sparqlSamplesContainer", columnDefs, dataSource,
+                                    {
+                                        caption:"Sample SPARQL Queries",
+                                        width: "500px",
+                                        sortedBy:{key:"Title",dir:"asc"}
+                                    }
+                                    );  
+                        dataTable.subscribe("rowClickEvent", function(e) {
+                            var target = e.target,
+                            record = this.getRecord(target);
+                            YAHOO.util.Dom.get("query").value=record.getData("SPARQL Query");
+                        });                            
+                }
+            }
+        };                    
+        HttpClient.GET("samples",oRequestData, HTTPAccept.HTML);                 
     },
     explainSparqlQuery: function(){
         var oRequestData = {

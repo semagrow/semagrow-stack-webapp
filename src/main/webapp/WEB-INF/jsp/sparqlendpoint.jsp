@@ -10,7 +10,7 @@ PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl:<http://www.w3.org/2002/07/owl#>
 PREFIX skos:<http://www.w3.org/2004/02/skos/core#>        
 </textarea>        
-<textarea name="<%=CONSTANTS.WEBAPP.PARAM_QUERY%>">SELECT * WHERE {
+<textarea name="<%=CONSTANTS.WEBAPP.PARAM_QUERY%>" id="<%=CONSTANTS.WEBAPP.PARAM_QUERY%>">SELECT * WHERE {
   ?s ?p ?o
 } LIMIT 20</textarea><br/>
         <button type="button" onclick="javascript:SemaGrowSparql.runSparqlQuery()">SPARQL</button>
@@ -37,7 +37,8 @@ PREFIX skos:<http://www.w3.org/2004/02/skos/core#>
         <button type="button" onclick="javascript:SemaGrowSparql.explainSparqlQuery()">Explain</button>
         <button type="button">Decompose Query</button>
         <button type="button">Explain decomposed Query</button>
-    </form>    
+    </form> 
+    <div id="sparqlSamplesContainer">SAMPLES</div>
 </div>
 <div id="sparqlContentRight">
     <div id="sparqlResponse"></div>
