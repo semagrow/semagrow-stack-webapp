@@ -36,8 +36,8 @@ PREFIX skos:<http://www.w3.org/2004/02/skos/core#>
         <br/>
         <button type="button" onclick="javascript:SemaGrowSparql.explainSparqlQuery()">Explain</button>
         <button type="button">Decompose Query</button>
-        <button type="button">Explain decomposed Query</button>
-    </form> 
+        <button type="button" onclick="javascript:SemaGrowSparql.explainDecomposedQuery()">Explain decomposed Query</button>
+    </form>
     <div id="sparqlSamplesContainer">SAMPLES</div>
 </div>
 <div id="sparqlContentRight">
