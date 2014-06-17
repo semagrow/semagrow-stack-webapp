@@ -2,12 +2,9 @@ package eu.semagrow.stack.webapp.controllers;
 
 import eu.semagrow.modules.sparqlutils.SparqlUtils;
 import eu.semagrow.stack.modules.commons.CONSTANTS;
+import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowConfig;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.Writer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +17,6 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.TupleQueryResultHandlerException;
-import org.openrdf.query.Update;
 import org.openrdf.query.UpdateExecutionException;
 import org.openrdf.query.parser.ParsedOperation;
 import org.openrdf.query.parser.ParsedQuery;
@@ -28,16 +24,18 @@ import org.openrdf.query.parser.ParsedUpdate;
 import org.openrdf.query.parser.QueryParserUtil;
 import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
+import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.repository.config.RepositoryConfigException;
+import org.openrdf.repository.config.RepositoryRegistry;
+import org.openrdf.repository.sail.config.SailRepositoryConfig;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.n3.N3Writer;
 import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.rio.trig.TriGWriter;
 import org.openrdf.rio.trix.TriXWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
-import org.openrdf.sail.memory.MemoryStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,14 +50,17 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/sparql")
 public class SparqlController {
     
-    private SailRepository repository;
+    private Repository repository;
     
-    public SparqlController() throws RepositoryException {
+    public SparqlController() throws RepositoryException {            
     }
     
     @PostConstruct
-    public void startUp() throws RepositoryException {
-        repository = new SailRepository(new MemoryStore());
+    public void startUp() throws RepositoryException, RepositoryConfigException {
+        //repository = new SailRepository(new MemoryStore());
+        //repository.initialize();
+        SailRepositoryConfig repoConfig = new SailRepositoryConfig(new SemagrowConfig());
+        repository = RepositoryRegistry.getInstance().get(repoConfig.getType()).getRepository(repoConfig);
         repository.initialize();
     }
     
@@ -159,7 +160,7 @@ public class SparqlController {
                 if(accept.indexOf(CONSTANTS.MIMETYPES.SPARQLRESULTS_JSON)!=-1){
                     ((TupleQuery)query).evaluate(new SPARQLResultsJSONWriter(out));
                 } else {
-                    //((TupleQuery)query).evaluate(new TupleQueryTableWriter(out));
+                    ((TupleQuery)query).evaluate(new eu.semagrow.modules.rioutils.queryresultio.HTMLTableWriter(out));
                 }
             } else
             if(query instanceof GraphQuery){

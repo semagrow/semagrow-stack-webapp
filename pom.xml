@@ -131,11 +131,29 @@
             <artifactId>semagrow-stack-modules-sparqlutils</artifactId>
             <version>1.0.0-rc1</version>
             <scope>provided</scope>
-        </dependency>                
+        </dependency>
+        <dependency>
+            <groupId>eu.semagrow.stack.modules</groupId>
+            <artifactId>semagrow-stack-modules-rioutils</artifactId>
+            <version>1.0.0-rc1</version>
+            <scope>provided</scope>
+        </dependency>        
+        <dependency>
+            <groupId>eu.semagrow.stack.modules</groupId>
+            <artifactId>semagrow-stack-modules-sails-semagrow</artifactId>
+            <version>1.0.0-rc1</version>
+            <scope>provided</scope>
+        </dependency>                        
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>3.2.3.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     

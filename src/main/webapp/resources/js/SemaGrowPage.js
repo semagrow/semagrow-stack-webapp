@@ -159,11 +159,16 @@ SemaGrowSparql = {
     runSparqlQuery: function(){
         var oRequestData = {
             "localData":{
-                "onSuccess":function(oRequestData, response){
+                "onSuccess":function(oRequestData, response){                    
                     if(response.status===200){
-                        document.getElementById("accept").value = response.getResponseHeader["Content-Type"];    
-                        document.getElementById("sparqlResponse").innerHTML="<pre>"+
-                                SemaGrowUtils.StringUtils.replaceAngleBrackets(response.responseText)+"</pre>"; 
+                        var accept = response.getResponseHeader["Content-Type"];
+                        document.getElementById("accept").value = accept;
+                        if(accept=="text/html"){ 
+                            document.getElementById("sparqlResponse").innerHTML=response.responseText;
+                        } else {
+                            document.getElementById("sparqlResponse").innerHTML="<pre>"+
+                                    SemaGrowUtils.StringUtils.replaceAngleBrackets(response.responseText)+"</pre>"; 
+                        }
                     }
                     if(response.status===204){
                         document.getElementById("sparqlResponse").innerHTML="HTTP 204 - indicating success.";
