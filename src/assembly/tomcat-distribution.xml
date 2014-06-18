@@ -26,6 +26,14 @@
             </includes>                      
         </fileSet>        
         <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>/resources</outputDirectory>
+            <filtered>true</filtered>
+            <includes>
+                <include>**/**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.build.directory}/apache-tomcat-${tomcat.version}</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
