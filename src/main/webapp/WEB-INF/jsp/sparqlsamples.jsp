@@ -31,7 +31,7 @@
                     <% try { %>
                     <td><%=sampleData.get(r)
                             .get(SEMAGROW.SYSTEM.SPARQL_SAMPLES.SPARQL_SAMPLE_TEXT)
-                            .iterator().next().stringValue()
+                            .iterator().next().stringValue().replaceAll("<","&lt;").replaceAll(">","&gt;")
                     %></td>
                     <% } catch(Exception e){ %>
                     <td><%=sampleData.get(r).get(SEMAGROW.SYSTEM.SPARQL_SAMPLES.SPARQL_SAMPLE_TEXT).iterator().next()%></td>
