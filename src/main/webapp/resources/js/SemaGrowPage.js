@@ -171,7 +171,7 @@ SemaGrowSparql = {
                         dataTable.subscribe("rowClickEvent", function(e) {
                             var target = e.target,
                             record = this.getRecord(target);
-                            YAHOO.util.Dom.get("query").value=record.getData("SPARQL Query");
+                            YAHOO.util.Dom.get("query").value=record.getData("SPARQL Query").replace(/&gt;/g,'>').replace(/&lt;/g,'<');
                         });                            
                 }
             }
