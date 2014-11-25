@@ -232,6 +232,9 @@ SemaGrowSparql = {
                         case 401:
                             document.getElementById("sparqlResponse").innerHTML = "HTTP 401 - Your roles do not permit UPDATES/DELETES.";
                         break;
+                        case 500:
+                            document.getElementById("sparqlResponse").innerHTML = "HTTP 500 - Something went wrong.<br/>"+response.responseText;
+                        break;                        
                     }                  
                 },
                 "form":"sparqlQuery"
