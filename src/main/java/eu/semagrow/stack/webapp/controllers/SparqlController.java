@@ -82,7 +82,7 @@ public class SparqlController {
         return mav;
     }
     
-    @RequestMapping(value="", method=RequestMethod.POST, params={ CONSTANTS.WEBAPP.PARAM_QUERY })
+    @RequestMapping(value="", params={ CONSTANTS.WEBAPP.PARAM_QUERY })
     public void query(HttpServletResponse response, HttpServletRequest request, 
             @RequestParam String query, 
             @RequestParam(defaultValue="") String prefixes,
