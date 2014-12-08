@@ -1,18 +1,23 @@
 package eu.semagrow.stack.webapp.controllers;
 
+import eu.semagrow.modules.fileutils.FileUtils;
 import eu.semagrow.modules.sparqlutils.SparqlUtils;
 import eu.semagrow.stack.modules.api.decomposer.QueryDecompositionException;
 import eu.semagrow.stack.modules.api.query.SemagrowTupleQuery;
+import eu.semagrow.stack.modules.api.repository.SemagrowRepository;
 import eu.semagrow.stack.modules.commons.CONSTANTS;
-import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowConfig;
-import java.io.IOException;
-import java.io.OutputStream;
+
+import java.io.*;
+import java.net.URL;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowRepositoryConfig;
+import org.openrdf.model.Graph;
+import org.openrdf.model.Resource;
+import org.openrdf.model.impl.GraphImpl;
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -32,15 +37,19 @@ import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.config.RepositoryConfigException;
-import org.openrdf.repository.config.RepositoryRegistry;
+import org.openrdf.repository.config.*;
 import org.openrdf.repository.sail.config.SailRepositoryConfig;
+import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.Rio;
+import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.n3.N3Writer;
 import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.rio.trig.TriGWriter;
 import org.openrdf.rio.trix.TriXWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
+import org.openrdf.sail.config.SailConfigException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,17 +64,16 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/sparql")
 public class SparqlController {
     
-    private Repository repository;
+    private SemagrowRepository repository;
     
     public SparqlController() throws RepositoryException {            
     }
     
     @PostConstruct
     public void startUp() throws RepositoryException, RepositoryConfigException {
-        //repository = new SailRepository(new MemoryStore());
-        //repository.initialize();
-        SemagrowRepositoryConfig repoConfig = new SemagrowRepositoryConfig();
-        repository = RepositoryRegistry.getInstance().get(repoConfig.getType()).getRepository(repoConfig);
+        SemagrowRepositoryConfig repoConfig = getConfig();
+        RepositoryFactory repoFactory = RepositoryRegistry.getInstance().get(repoConfig.getType());
+        repository = (SemagrowRepository) repoFactory.getRepository(repoConfig);
         repository.initialize();
     }
     
@@ -75,7 +83,45 @@ public class SparqlController {
             this.repository.shutDown();
         } catch (RepositoryException ex) {}
     }
-            
+
+    private SemagrowRepositoryConfig getConfig() {
+
+        try {
+            File file = FileUtils.getFile("repository.ttl");
+            Graph configGraph = parseConfig(file);
+            RepositoryConfig repConf = RepositoryConfig.create(configGraph, null);
+            repConf.validate();
+            RepositoryImplConfig implConf = repConf.getRepositoryImplConfig();
+            return (SemagrowRepositoryConfig)implConf;
+        } catch (RepositoryConfigException e) {
+            e.printStackTrace();
+            return new SemagrowRepositoryConfig();
+        } catch (SailConfigException | IOException e) {
+            e.printStackTrace();
+            return new SemagrowRepositoryConfig();
+        }
+    }
+
+    protected Graph parseConfig(File file) throws SailConfigException, IOException {
+
+        RDFFormat format = Rio.getParserFormatForFileName(file.getAbsolutePath());
+        if (format==null)
+            throw new SailConfigException("Unsupported file format: " + file.getAbsolutePath());
+        RDFParser parser = Rio.createParser(format);
+        Graph model = new GraphImpl();
+        parser.setRDFHandler(new StatementCollector(model));
+        InputStream stream = new FileInputStream(file);
+
+        try {
+            parser.parse(stream, file.getAbsolutePath());
+        } catch (Exception e) {
+            throw new SailConfigException("Error parsing file!");
+        }
+
+        stream.close();
+        return model;
+    }
+
     @RequestMapping(method=RequestMethod.GET)
     public ModelAndView getSparqlEndpointForm(HttpServletResponse response) throws IOException{
         ModelAndView mav = new ModelAndView("sparqlendpoint");
