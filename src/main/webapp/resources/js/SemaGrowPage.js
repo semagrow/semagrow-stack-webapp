@@ -24,6 +24,36 @@ SemaGrowPage = {
         };
         HttpClient.GET("welcome", oRequestData, HTTPAccept.HTML);         
     },
+    loadVocBench: function(){
+        var oRequestData = {
+            "localData":{
+                "onSuccess":function(oRequestData, response){
+                    document.getElementById("vocBenchContent").innerHTML=response.responseText;
+                }
+            }
+        };
+        HttpClient.GET("page?template=vocbench", oRequestData, HTTPAccept.HTML);         
+    },
+    loadAdminPage: function(){
+        var oRequestData = {
+            "localData":{
+                "onSuccess":function(oRequestData, response){
+                    document.getElementById("adminContent").innerHTML=response.responseText;
+                }
+            }
+        };
+        HttpClient.GET("page?template=admin", oRequestData, HTTPAccept.HTML);         
+    },
+    loadGettingStarted: function(){
+        var oRequestData = {
+            "localData":{
+                "onSuccess":function(oRequestData, response){
+                    document.getElementById("gettingStartedContent").innerHTML=response.responseText;
+                }
+            }
+        };
+        HttpClient.GET("page?template=gettingstarted", oRequestData, HTTPAccept.HTML);         
+    },    
     login: function(){       
         var oRequestData = {
             "localData":{
@@ -50,7 +80,29 @@ SemaGrowPage = {
             }
         };           
         HttpClient.GET("auth/logout", oRequestData, HTTPAccept.HTML);
-    },    
+    }, 
+    reloadConfig: function(){
+        var oRequestData = {
+            "localData":{
+                "onSuccess":function(oRequestData, response){
+                    alert("reloadConfig: status: " + response.status + " accepted, successfully reloaded config");
+                    SemaGrowPage.loadAdminPage();
+                },
+                onError: function(oRequestData, response){
+                    switch(response.status){
+                        case 401:
+                            alert("reloadConfig: unauthorized: " + response.status + ", user role does not permit reloading config");
+                        break;
+                        case 403:
+                            alert("reloadConfig: forbidden: " + response.status);
+                        break;                        
+                    }
+                    SemaGrowPage.loadAdminPage();                    
+                }
+            }
+        };           
+        HttpClient.GET("sparql/reloadConfig", oRequestData, HTTPAccept.HTML);        
+    },
     authenticate: function(){       
         var oRequestData = {
             "localData":{
@@ -87,9 +139,9 @@ SemaGrowTabs = {
         
         /* define tabs */
         this.mainTabs.addTab( new YAHOO.widget.Tab({
-            label: 'Welcome',
-            id: 'welcome',
-            content: '<div id=\"welcomeContent\"></div>',
+            label: 'Getting Started',
+            id: 'gettingstarted',
+            content: '<div id=\"gettingStartedContent\"></div>',
             cacheData: true
         }));
         this.mainTabs.addTab( new YAHOO.widget.Tab({
@@ -110,6 +162,12 @@ SemaGrowTabs = {
             content: '<div id=\"adminContent\"></div>',
             cacheData: true
         }));
+        this.mainTabs.addTab( new YAHOO.widget.Tab({
+            label: 'VocBench',
+            id: 'vocbench',
+            content: '<div id=\"vocBenchContent\"></div>',
+            cacheData: true
+        }));        
         
         /* append tabview to content */
         this.mainTabs.appendTo("content");
@@ -120,9 +178,15 @@ SemaGrowTabs = {
                 case 'sparql':
                     SemaGrowSparql.loadSparql();
                 break;
-                case 'welcome':
-                    SemaGrowPage.loadWelcome();
+                case 'gettingstarted':
+                    SemaGrowPage.loadGettingStarted();
                 break;
+                case 'vocbench':
+                    SemaGrowPage.loadVocBench();
+                break;
+                case 'admin':
+                    SemaGrowPage.loadAdminPage();
+                break;            
             }
         });
         
