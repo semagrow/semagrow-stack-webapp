@@ -44,6 +44,16 @@ SemaGrowPage = {
         };
         HttpClient.GET("page?template=admin", oRequestData, HTTPAccept.HTML);         
     },
+    loadDocsPage: function(){
+        var oRequestData = {
+            "localData":{
+                "onSuccess":function(oRequestData, response){
+                    document.getElementById("docsContent").innerHTML=response.responseText;
+                }
+            }
+        };
+        HttpClient.GET("page?template=docs", oRequestData, HTTPAccept.HTML);         
+    },
     loadGettingStarted: function(){
         var oRequestData = {
             "localData":{
@@ -150,12 +160,20 @@ SemaGrowTabs = {
             content: '<div id=\"sparqlContent\"></div>',
             cacheData: true
         }));
+        /*
         this.mainTabs.addTab( new YAHOO.widget.Tab({
             label: 'Federation',
             id: 'federation',
             content: '<div id=\"federationContent\"></div>',
             cacheData: true
-        }));        
+        }));  
+        */
+        this.mainTabs.addTab( new YAHOO.widget.Tab({
+            label: 'Docs',
+            id: 'docs',
+            content: '<div id=\"docsContent\"></div>',
+            cacheData: true
+        }));       
         this.mainTabs.addTab( new YAHOO.widget.Tab({
             label: 'Admin',
             id: 'admin',
@@ -186,7 +204,10 @@ SemaGrowTabs = {
                 break;
                 case 'admin':
                     SemaGrowPage.loadAdminPage();
-                break;            
+                break; 
+                case 'docs':
+                    SemaGrowPage.loadDocsPage();
+                break;             
             }
         });
         
