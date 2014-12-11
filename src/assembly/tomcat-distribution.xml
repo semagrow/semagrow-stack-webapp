@@ -32,6 +32,17 @@
             <includes>
                 <include>**/**</include>
             </includes>
+	    <excludes>
+		<exclude>log4j.properties</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>/lib/semagrow</outputDirectory>
+            <filtered>true</filtered>
+            <includes>
+                <include>log4j.properties</include>
+            </includes>
         </fileSet>
         <fileSet>
             <directory>${project.build.directory}/apache-tomcat-${tomcat.version}</directory>
@@ -62,5 +73,6 @@
                 <exclude>javax.servlet.jsp:*</exclude>
             </excludes>
         </dependencySet>
+
     </dependencySets>
 </assembly>
