@@ -32,6 +32,10 @@ import org.openrdf.query.parser.ParsedOperation;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedUpdate;
 import org.openrdf.query.parser.QueryParserUtil;
+import org.openrdf.query.resultio.BooleanQueryResultFormat;
+import org.openrdf.query.resultio.BooleanQueryResultParserRegistry;
+import org.openrdf.query.resultio.TupleQueryResultFormat;
+import org.openrdf.query.resultio.TupleQueryResultParserRegistry;
 import org.openrdf.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 import org.openrdf.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.openrdf.repository.Repository;
@@ -75,6 +79,14 @@ public class SparqlController {
         RepositoryFactory repoFactory = RepositoryRegistry.getInstance().get(repoConfig.getType());
         repository = (SemagrowRepository) repoFactory.getRepository(repoConfig);
         repository.initialize();
+
+        // remove CSV and TSV format due to bug: literals are recognized as URIs if they contain a substring parsable as URI.
+        TupleQueryResultParserRegistry registry = TupleQueryResultParserRegistry.getInstance();
+        registry.remove(registry.get(TupleQueryResultFormat.CSV));
+        registry.remove(registry.get(TupleQueryResultFormat.TSV));
+
+        BooleanQueryResultParserRegistry booleanRegistry = BooleanQueryResultParserRegistry.getInstance();
+        booleanRegistry.remove(booleanRegistry.get(BooleanQueryResultFormat.JSON));
     }
     
     @PreDestroy
