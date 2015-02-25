@@ -108,7 +108,7 @@ public class SparqlController {
         } catch (RepositoryConfigException e) {
             e.printStackTrace();
             return new SemagrowRepositoryConfig();
-        } catch (SailConfigException | IOException e) {
+        } catch (SailConfigException | IOException | NullPointerException e) {
             e.printStackTrace();
             return new SemagrowRepositoryConfig();
         }
@@ -246,6 +246,20 @@ public class SparqlController {
         }
     }
     
+    @RequestMapping(value="/reloadConfig", method=RequestMethod.GET)
+    public void reloadConfig(HttpServletResponse response, HttpServletRequest request) 
+            throws IOException, RepositoryConfigException, RepositoryException, MalformedQueryException {
+        if(request.getUserPrincipal()!=null && request.isUserInRole(CONSTANTS.WEBAPP.ROLES.ROLE_SEMAGROW_ADMIN)){
+            this.startUp();                    
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+        } else {
+            if(request.getUserPrincipal()==null){
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+        }
+    }    
     
     private void handleQuery(OutputStream out, String accept, Query query)             
             throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException, 
