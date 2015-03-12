@@ -9,12 +9,15 @@ import eu.semagrow.stack.modules.commons.CONSTANTS;
 
 import java.io.*;
 import java.net.URL;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowRepositoryConfig;
+import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowInternalException;
+
 import org.openrdf.model.Graph;
 import org.openrdf.model.Resource;
 import org.openrdf.model.impl.GraphImpl;
@@ -38,6 +41,7 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.config.*;
+import org.openrdf.repository.http.HTTPQueryEvaluationException;
 import org.openrdf.repository.sail.config.SailRepositoryConfig;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -249,40 +253,72 @@ public class SparqlController {
         }
     }    
     
-    private void handleQuery(OutputStream out, String accept, Query query)             
-            throws IOException, RepositoryException, MalformedQueryException, QueryEvaluationException, 
-                   TupleQueryResultHandlerException, RDFHandlerException {
+    private void handleQuery(OutputStream out, String accept, Query query) 
+            throws Exception {
             if(query instanceof TupleQuery){
-                if(accept.indexOf(CONSTANTS.MIMETYPES.SPARQLRESULTS_XML)!=-1){
-                    ((TupleQuery)query).evaluate(new SPARQLResultsXMLWriter(out));
-                } else
-                if(accept.indexOf(CONSTANTS.MIMETYPES.SPARQLRESULTS_JSON)!=-1){
-                    ((TupleQuery)query).evaluate(new SPARQLResultsJSONWriter(out));
-                } else {
-                    ((TupleQuery)query).evaluate(new eu.semagrow.modules.rioutils.queryresultio.HTMLTableWriter(out));
-                }
-            } else
-            if(query instanceof GraphQuery){
-                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_RDFXML)!=-1){
-                    ((GraphQuery)query).evaluate(new RDFXMLPrettyWriter(out));
-                } else
-                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_N3)!=-1){
-                    ((GraphQuery)query).evaluate(new N3Writer(out));
-                } else
-                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_TURTLE)!=-1){
-                    ((GraphQuery)query).evaluate(new TurtleWriter(out));
-                } else
-                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_TRIG)!=-1){
-                    ((GraphQuery)query).evaluate(new TriGWriter(out));
-                } else
-                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_TRIX)!=-1){
-                    ((GraphQuery)query).evaluate(new TriXWriter(out));
-                } else {
-                    ((GraphQuery)query).evaluate(new TurtleWriter(out));
-                }                
-            } else
-            if(query instanceof BooleanQuery){
-                out.write((((BooleanQuery)query).evaluate()+"").getBytes());
+            	try {
+	                if(accept.indexOf(CONSTANTS.MIMETYPES.SPARQLRESULTS_XML)!=-1){
+	                    ((TupleQuery)query).evaluate(new SPARQLResultsXMLWriter(out));
+	                } else
+	                if(accept.indexOf(CONSTANTS.MIMETYPES.SPARQLRESULTS_JSON)!=-1){
+	                    ((TupleQuery)query).evaluate(new SPARQLResultsJSONWriter(out));
+	                } else {
+	                    ((TupleQuery)query).evaluate(new eu.semagrow.modules.rioutils.queryresultio.HTMLTableWriter(out));
+	                }
+            	} catch (TupleQueryResultHandlerException e) {
+        			
+        		} catch (QueryEvaluationException e) {
+        			
+        		} 
+            } else if(query instanceof GraphQuery){
+            	try {
+	                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_RDFXML)!=-1) {
+	                    ((GraphQuery)query).evaluate(new RDFXMLPrettyWriter(out));
+	                } else
+	                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_N3)!=-1) {
+	                    ((GraphQuery)query).evaluate(new N3Writer(out));
+	                } else
+	                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_TURTLE)!=-1) {
+	                    ((GraphQuery)query).evaluate(new TurtleWriter(out));
+	                } else
+	                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_TRIG)!=-1) {
+	                    ((GraphQuery)query).evaluate(new TriGWriter(out));
+	                } else
+	                if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_TRIX)!=-1) {
+	                    ((GraphQuery)query).evaluate(new TriXWriter(out));
+	                } else {
+	                    ((GraphQuery)query).evaluate(new TurtleWriter(out));
+	                }    
+            	} catch (RDFHandlerException e) {
+            		// These exceptions are internal to the SemaGrow Stack
+        			throw new Exception( e );
+	    		} catch (QueryEvaluationException e) {
+	    			if( (e.getCause() != null) && (e.getCause() instanceof IOException) ) {
+	            		// These exceptions are caused by inability to feed the OutputStream with
+	    				// the response, and are internal to the SemaGrow Stack
+	    				throw new SemaGrowInternalException("SemaGrow internal exception", e.getCause());
+	    			}
+	    			else {
+	            		// These exceptions are caused by inability to get results from the federated
+	    				// endpoints and are external to the SemaGrow Stack
+	    				// XXX:NOTE: MUST CHECK FOR OTHER causes that are actually internal as immediatelly above
+	    				
+	    			}
+	    		} 
+
+            } else if(query instanceof BooleanQuery) {
+            	// This is the only accept branch where IOException is not encapsulated
+            	// inside QueryEvaluationException. This IOException should be treated
+            	// uniformly as with QueryEvaluationExceptionS caused by IOExceptionS
+            	// above.
+                try {
+					out.write((((BooleanQuery)query).evaluate()+"").getBytes());
+				} catch (IOException e) {
+					throw new QueryEvaluationException(e.getMessage(), e);
+				} catch (QueryEvaluationException e) {
+			
+				}
             }
+    	
     }    
 }
