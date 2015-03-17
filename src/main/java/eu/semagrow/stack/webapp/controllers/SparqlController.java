@@ -70,6 +70,7 @@ import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowRepositoryConfig;
 /**
  *
  * @author http://www.turnguard.com/turnguard
+ * @author Giannis Mouchakis
  */
 @Controller
 @RequestMapping("/sparql")
@@ -261,7 +262,7 @@ public class SparqlController {
     }    
     
     private void handleQuery(HttpServletResponse response, String accept, Query query) 
-    		throws IOException, TupleQueryResultHandlerException, QueryEvaluationException, RDFHandlerException  {
+    		throws IOException  {
     	OutputStream out = response.getOutputStream();
     	try {
 			if (query instanceof TupleQuery) {
@@ -291,8 +292,6 @@ public class SparqlController {
 			}
     	} catch (TupleQueryResultHandlerException e) {
     		response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-    		out.write(Arrays.toString(e.getStackTrace()).getBytes());
-			throw e;
 		} catch (QueryEvaluationException e) {
 			if (e instanceof QueryInterruptedException) {
 				response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);			
@@ -312,15 +311,18 @@ public class SparqlController {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			} else if (e instanceof ValueExprEvaluationException) {
 				response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+			} else if (e.getCause() instanceof RepositoryException || e.getCause() instanceof IOException) {
+				response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
+				response.setHeader("ERROR", "Time-out while quering a source.\n"
+						+ "Please contact the source's administrator to get more info");
+				response.flushBuffer();
 			} else {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
-			out.write(Arrays.toString(e.getStackTrace()).getBytes());
-			throw e;
 		} catch (RDFHandlerException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			out.write(Arrays.toString(e.getStackTrace()).getBytes());
-			throw e;
+		} catch (IOException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
  	
     }    
