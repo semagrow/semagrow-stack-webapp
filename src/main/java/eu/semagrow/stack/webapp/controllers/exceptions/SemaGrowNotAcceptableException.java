@@ -12,8 +12,13 @@ public class SemaGrowNotAcceptableException extends SemaGrowException {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 6054327542082741039L;
+
+	/**
+	 * 
+	 */
 	public SemaGrowNotAcceptableException() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 
 	/**
@@ -25,7 +30,6 @@ public class SemaGrowNotAcceptableException extends SemaGrowException {
 	public SemaGrowNotAcceptableException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -34,7 +38,6 @@ public class SemaGrowNotAcceptableException extends SemaGrowException {
 	 */
 	public SemaGrowNotAcceptableException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -42,7 +45,6 @@ public class SemaGrowNotAcceptableException extends SemaGrowException {
 	 */
 	public SemaGrowNotAcceptableException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -50,7 +52,6 @@ public class SemaGrowNotAcceptableException extends SemaGrowException {
 	 */
 	public SemaGrowNotAcceptableException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

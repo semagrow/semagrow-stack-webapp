@@ -9,6 +9,8 @@ package eu.semagrow.stack.webapp.controllers.exceptions;
  */
 public class SemaGrowExternalError extends SemaGrowException {
 
+
+
 	/**
 	 * 
 	 */

@@ -52,6 +52,8 @@ import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.sail.config.SailConfigException;
 import org.openrdf.sail.rdbms.exceptions.RdbmsQueryEvaluationException;
 import org.openrdf.sail.rdbms.exceptions.UnsupportedRdbmsOperatorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -68,6 +70,7 @@ import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowRepositoryConfig;
 import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowBadRequestException;
 import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowNotAcceptableException;
 import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowTimeOutException;
+import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowExternalError;
 
 /**
  *
@@ -77,6 +80,8 @@ import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowTimeOutException;
 @Controller
 @RequestMapping("/sparql")
 public class SparqlController {
+	
+	static Logger logger = LoggerFactory.getLogger(SparqlController.class);
     
     private SemagrowRepository repository;
     
@@ -147,7 +152,7 @@ public class SparqlController {
             @RequestParam String query, 
             @RequestParam(defaultValue="") String prefixes,
             @RequestParam(value=CONSTANTS.WEBAPP.PARAM_ACCEPT, defaultValue="", required=false) String accept) 
-            throws MalformedQueryException, RepositoryException, UpdateExecutionException, IOException, QueryEvaluationException, TupleQueryResultHandlerException, RDFHandlerException {
+            		throws MalformedQueryException, RepositoryException, UpdateExecutionException {
         
         if(!prefixes.trim().equals("")){
             query = prefixes.concat("\n").concat(query);
@@ -178,7 +183,13 @@ public class SparqlController {
                 String acceptFormat = !accept.equals("")?accept:request.getHeader("accept");
                 accept = SparqlUtils.getAcceptMimeType(q, acceptFormat);
                 response.setContentType(accept);
-                this.handleQuery(response, accept, q);
+                try {
+					this.handleQuery(response, accept, q);
+				} catch (SemaGrowTimeOutException | SemaGrowBadRequestException
+						| SemaGrowNotAcceptableException
+						| SemaGrowExternalError | IOException e) {
+					logger.error("SemaGrow Exception", e);
+				}
             }            
         } finally {
             if(repCon!=null){
@@ -264,7 +275,7 @@ public class SparqlController {
     }    
     
     private void handleQuery(HttpServletResponse response, String accept, Query query) 
-    		throws IOException, SemaGrowTimeOutException, SemaGrowBadRequestException, SemaGrowNotAcceptableException  {
+    		throws IOException, SemaGrowTimeOutException, SemaGrowBadRequestException, SemaGrowNotAcceptableException, SemaGrowExternalError  {
     	OutputStream out = response.getOutputStream();
     	try {
 			if (query instanceof TupleQuery) {
@@ -294,7 +305,7 @@ public class SparqlController {
 			}
     	} catch (TupleQueryResultHandlerException e) {
     		response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-    		throw new SemaGrowNotAcceptableException("", e);
+    		throw new SemaGrowNotAcceptableException("The requested type could not be handled by a source", e);
 		} catch (QueryEvaluationException e) {
 			if (e instanceof QueryInterruptedException) {
 				response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);	
@@ -302,32 +313,39 @@ public class SparqlController {
 			} else if (e instanceof HTTPQueryEvaluationException) {
 				if (((HTTPQueryEvaluationException) e).isCausedByIOException()) {
 					response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);	
-					throw new SemaGrowTimeOutException("Timeout because of I/O issues with the source", e);
+					throw new SemaGrowTimeOutException("Time-out because of I/O issues with the source", e);
 				} else if (((HTTPQueryEvaluationException) e).isCausedByMalformedQueryException()) {
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-					throw new SemaGrowBadRequestException("Query cannot be handled by a source", e);
+					throw new SemaGrowBadRequestException("Query cannot be handled by a source (malformed query", e);
 				} else if (((HTTPQueryEvaluationException) e).isCausedByRepositoryException()) {
 					response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);	
-					throw new SemaGrowTimeOutException("Timeout because of source repository issues", e);
+					throw new SemaGrowTimeOutException("Time-out because of source repository issues", e);
 				} else {
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					throw new SemaGrowExternalError("Unknown error during Http query evaluation in source", e);
 				}
 			} else if (e instanceof RdbmsQueryEvaluationException) {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				throw new SemaGrowExternalError("Unknown error during RDBMS query evaluation in source", e);
 			} else if (e instanceof UnsupportedRdbmsOperatorException) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				throw new SemaGrowBadRequestException("Query cannot be handled by a RDBMS source", e);
 			} else if (e instanceof ValueExprEvaluationException) {
 				response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+				throw new SemaGrowNotAcceptableException("The requested value expression could not be handled by a source", e);
 			} else if (e.getCause() instanceof RepositoryException || e.getCause() instanceof IOException) {
 				response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);	
-				throw new SemaGrowTimeOutException("Timeout because of source repository issues", e);
+				throw new SemaGrowTimeOutException("Time-out because of source repository issues", e);
 			} else {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				throw new SemaGrowExternalError("Unknown error during query evaluation in source", e);
 			}
 		} catch (RDFHandlerException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			throw new SemaGrowExternalError("Error during rdf handling", e);
 		} catch (IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			throw new SemaGrowExternalError("Error caused by I/O issues between SemaGrow and a source", e);
 		}
  	
     }    
