@@ -152,7 +152,7 @@ public class SparqlController {
             @RequestParam String query, 
             @RequestParam(defaultValue="") String prefixes,
             @RequestParam(value=CONSTANTS.WEBAPP.PARAM_ACCEPT, defaultValue="", required=false) String accept) 
-            		throws MalformedQueryException, RepositoryException, UpdateExecutionException {
+            		throws MalformedQueryException, RepositoryException, UpdateExecutionException, IOException {
         
         if(!prefixes.trim().equals("")){
             query = prefixes.concat("\n").concat(query);
@@ -188,6 +188,8 @@ public class SparqlController {
 				} catch (SemaGrowTimeOutException | SemaGrowBadRequestException
 						| SemaGrowNotAcceptableException
 						| SemaGrowExternalError | IOException e) {
+					response.setHeader("ERROR", e.getMessage());
+					response.flushBuffer();
 					logger.error("SemaGrow Exception", e);
 				}
             }            
