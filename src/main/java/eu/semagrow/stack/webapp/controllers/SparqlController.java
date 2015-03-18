@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -66,6 +65,9 @@ import eu.semagrow.stack.modules.api.query.SemagrowTupleQuery;
 import eu.semagrow.stack.modules.api.repository.SemagrowRepository;
 import eu.semagrow.stack.modules.commons.CONSTANTS;
 import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowRepositoryConfig;
+import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowBadRequestException;
+import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowNotAcceptableException;
+import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowTimeOutException;
 
 /**
  *
@@ -262,7 +264,7 @@ public class SparqlController {
     }    
     
     private void handleQuery(HttpServletResponse response, String accept, Query query) 
-    		throws IOException  {
+    		throws IOException, SemaGrowTimeOutException, SemaGrowBadRequestException, SemaGrowNotAcceptableException  {
     	OutputStream out = response.getOutputStream();
     	try {
 			if (query instanceof TupleQuery) {
@@ -292,16 +294,21 @@ public class SparqlController {
 			}
     	} catch (TupleQueryResultHandlerException e) {
     		response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+    		throw new SemaGrowNotAcceptableException("", e);
 		} catch (QueryEvaluationException e) {
 			if (e instanceof QueryInterruptedException) {
-				response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);			
+				response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);	
+				throw new SemaGrowTimeOutException("Query was interrupted", e);	
 			} else if (e instanceof HTTPQueryEvaluationException) {
 				if (((HTTPQueryEvaluationException) e).isCausedByIOException()) {
-					response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
+					response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);	
+					throw new SemaGrowTimeOutException("Timeout because of I/O issues with the source", e);
 				} else if (((HTTPQueryEvaluationException) e).isCausedByMalformedQueryException()) {
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					throw new SemaGrowBadRequestException("Query cannot be handled by a source", e);
 				} else if (((HTTPQueryEvaluationException) e).isCausedByRepositoryException()) {
-					response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
+					response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);	
+					throw new SemaGrowTimeOutException("Timeout because of source repository issues", e);
 				} else {
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				}
@@ -312,10 +319,8 @@ public class SparqlController {
 			} else if (e instanceof ValueExprEvaluationException) {
 				response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
 			} else if (e.getCause() instanceof RepositoryException || e.getCause() instanceof IOException) {
-				response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
-				response.setHeader("ERROR", "Time-out while quering a source.\n"
-						+ "Please contact the source's administrator to get more info");
-				response.flushBuffer();
+				response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);	
+				throw new SemaGrowTimeOutException("Timeout because of source repository issues", e);
 			} else {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
