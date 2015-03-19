@@ -187,7 +187,7 @@ public class SparqlController {
 					this.handleQuery(response, accept, q);
 				} catch (SemaGrowTimeOutException | SemaGrowBadRequestException
 						| SemaGrowNotAcceptableException
-						| SemaGrowExternalError | IOException e) {
+						| SemaGrowExternalError e) {
 					response.setHeader("ERROR", e.getMessage());
 					response.flushBuffer();
 					logger.error("SemaGrow Exception", e);
