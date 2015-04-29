@@ -141,7 +141,7 @@
     mvn clean package -Psemagrow-stack-webapp-distribution
 </source>
             <br/>
-            This will result in a zip file in ${semagrow-stack-webapp.root} containing a fully equipped
+            This will result in a zip file in ${semagrow-stack-webapp.root}/target containing a fully equipped
             tomcat (in version 7.0.42 as of writing). 
             This tomcat is configured with all dependencies (lib, JNDI) that are needed to run the 
             SemaGrow-Stack-Webapp. Please note that external dependencies need to be setup individually.
