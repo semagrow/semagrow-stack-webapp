@@ -142,10 +142,16 @@
 </source>
             <br/>
             This will result in a zip file in ${semagrow-stack-webapp.root}/target containing a fully equipped
-            tomcat (in version 7.0.42 as of writing). 
-            This tomcat is configured with all dependencies (lib, JNDI) that are needed to run the 
+            tomcat (in version 7.0.42 as of writing). This tomcat is configured with all dependencies (lib, JNDI) that are needed to run the 
             SemaGrow-Stack-Webapp. Please note that external dependencies need to be setup individually.
             For example a the Postgres database needs to be installed and run separately.
+            In order to run SemaGrow uncompress the generated zip, copy the files from the "resources" folder 
+            to /etc/default/semagrow and run the .startup.sh script located in the "bin" folder. 
+            If you do not have permissions to create directories under /etc/default then copy 
+             the files from the "resources" folder to /tmp  and in the resources/repository.ttl file edit line 
+            "semagrow:metadataInit "/etc/default/semagrow/metadata.ttl" ;" to semagrow:metadataInit "/tmp/metadata.ttl" ;".
+            Now you can run the .startup.sh script. 
+            SemaGrow webapp can be accessed at http://localhost:8080/SemaGrow/ .
         </section>
         <section name="Generating the maven-site documentation">
             SemaGrow-Stack-Webapp includes an automatically generated documentation including of
