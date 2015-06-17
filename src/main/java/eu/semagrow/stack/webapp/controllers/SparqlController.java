@@ -253,6 +253,14 @@ public class SparqlController {
                 Query q = repCon.prepareQuery(QueryLanguage.SPARQL, query);
                 if (q instanceof SemagrowTupleQuery) {
                     try {
+                        SemagrowTupleQuery qq = (SemagrowTupleQuery)q;
+                        Set<URI> namedGraphs = qq.getDataset().getNamedGraphs();
+                        if (namedGraphs != null && !namedGraphs.isEmpty()) {
+                            for (URI u  : namedGraphs) {
+                                qq.addIncludedSource(u);
+                            }
+                        }
+
                         TupleExpr decomposedExpr = ((SemagrowTupleQuery) q).getDecomposedQuery();
                         response.getWriter().append(decomposedExpr.toString());
                     } catch (QueryDecompositionException e) {
