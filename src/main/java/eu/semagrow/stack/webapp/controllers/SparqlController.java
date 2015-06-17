@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eu.semagrow.stack.modules.sails.semagrow.config.SemagrowRepositoryConfig;
+import eu.semagrow.stack.modules.sails.semagrow.query.SemagrowSailTupleQuery;
 import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowBadRequestException;
 import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowException;
 import eu.semagrow.stack.webapp.controllers.exceptions.SemaGrowExternalError;
@@ -187,9 +188,9 @@ public class SparqlController {
                 accept = SparqlUtils.getAcceptMimeType(q, acceptFormat);
                 response.setContentType(accept);
 
-                if (q instanceof SemagrowTupleQuery) {
-                    SemagrowTupleQuery qq = (SemagrowTupleQuery)q;
-                    Set<URI> namedGraphs = qq.getDataset().getNamedGraphs();
+                if (q instanceof SemagrowSailTupleQuery) {
+                    SemagrowSailTupleQuery qq = (SemagrowSailTupleQuery)q;
+                    Set<URI> namedGraphs = qq.getActiveDataset().getNamedGraphs();
                     // use named graph as include only sources
                     if (namedGraphs != null && !namedGraphs.isEmpty()) {
                         for (URI u  : namedGraphs) {
@@ -251,10 +252,10 @@ public class SparqlController {
             }
             if(pO instanceof ParsedQuery){
                 Query q = repCon.prepareQuery(QueryLanguage.SPARQL, query);
-                if (q instanceof SemagrowTupleQuery) {
+                if (q instanceof SemagrowSailTupleQuery) {
                     try {
-                        SemagrowTupleQuery qq = (SemagrowTupleQuery)q;
-                        Set<URI> namedGraphs = qq.getDataset().getNamedGraphs();
+                        SemagrowSailTupleQuery qq = (SemagrowSailTupleQuery)q;
+                        Set<URI> namedGraphs = qq.getActiveDataset().getNamedGraphs();
                         if (namedGraphs != null && !namedGraphs.isEmpty()) {
                             for (URI u  : namedGraphs) {
                                 qq.addIncludedSource(u);
