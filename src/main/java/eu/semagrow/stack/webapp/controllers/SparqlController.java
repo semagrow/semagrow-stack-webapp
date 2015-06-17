@@ -97,7 +97,7 @@ public class SparqlController {
         registry.remove(registry.get(TupleQueryResultFormat.TSV));
 
         BooleanQueryResultParserRegistry booleanRegistry = BooleanQueryResultParserRegistry.getInstance();
-        //booleanRegistry.remove(booleanRegistry.get(BooleanQueryResultFormat.JSON));
+        booleanRegistry.remove(booleanRegistry.get(BooleanQueryResultFormat.JSON));
     }
     
     @PreDestroy
@@ -190,11 +190,14 @@ public class SparqlController {
 
                 if (q instanceof SemagrowSailTupleQuery) {
                     SemagrowSailTupleQuery qq = (SemagrowSailTupleQuery)q;
-                    Set<URI> namedGraphs = qq.getActiveDataset().getNamedGraphs();
-                    // use named graph as include only sources
-                    if (namedGraphs != null && !namedGraphs.isEmpty()) {
-                        for (URI u  : namedGraphs) {
-                            qq.addIncludedSource(u);
+                    Dataset activeDataset = qq.getActiveDataset();
+                    if (activeDataset != null) {
+                    	Set<URI> namedGraphs = qq.getActiveDataset().getNamedGraphs();
+                        // use named graph as include only sources
+                        if (namedGraphs != null && !namedGraphs.isEmpty()) {
+                            for (URI u  : namedGraphs) {
+                                qq.addIncludedSource(u);
+                            }
                         }
                     }
                 }
@@ -255,11 +258,14 @@ public class SparqlController {
                 if (q instanceof SemagrowSailTupleQuery) {
                     try {
                         SemagrowSailTupleQuery qq = (SemagrowSailTupleQuery)q;
-                        Set<URI> namedGraphs = qq.getActiveDataset().getNamedGraphs();
-                        if (namedGraphs != null && !namedGraphs.isEmpty()) {
-                            for (URI u  : namedGraphs) {
-                                qq.addIncludedSource(u);
-                            }
+                        Dataset activeDataset = qq.getActiveDataset();
+                        if (activeDataset != null) {
+                        	 Set<URI> namedGraphs = activeDataset.getNamedGraphs();
+                             if (namedGraphs != null && !namedGraphs.isEmpty()) {
+                                 for (URI u  : namedGraphs) {
+                                     qq.addIncludedSource(u);
+                                 }
+                             }
                         }
 
                         TupleExpr decomposedExpr = ((SemagrowTupleQuery) q).getDecomposedQuery();
