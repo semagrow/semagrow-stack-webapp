@@ -10,6 +10,7 @@ import eu.semagrow.stack.modules.commons.CONSTANTS;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -28,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.openrdf.OpenRDFException;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
 import org.openrdf.model.impl.GraphImpl;
 import org.openrdf.query.*;
 import org.openrdf.query.algebra.TupleExpr;
@@ -184,6 +186,18 @@ public class SparqlController {
                 String acceptFormat = !accept.equals("")?accept:request.getHeader("accept");
                 accept = SparqlUtils.getAcceptMimeType(q, acceptFormat);
                 response.setContentType(accept);
+
+                if (q instanceof SemagrowTupleQuery) {
+                    SemagrowTupleQuery qq = (SemagrowTupleQuery)q;
+                    Set<URI> namedGraphs = qq.getDataset().getNamedGraphs();
+                    // use named graph as include only sources
+                    if (namedGraphs != null && !namedGraphs.isEmpty()) {
+                        for (URI u  : namedGraphs) {
+                            qq.addIncludedSource(u);
+                        }
+                    }
+                }
+
                 this.handleQuery(response.getOutputStream(), accept, q);
             }            
         } finally {
