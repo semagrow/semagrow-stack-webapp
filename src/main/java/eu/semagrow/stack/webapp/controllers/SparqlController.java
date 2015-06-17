@@ -9,6 +9,8 @@ import eu.semagrow.stack.modules.commons.CONSTANTS;
 
 import java.io.*;
 import java.net.URL;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
@@ -27,16 +29,7 @@ import org.openrdf.OpenRDFException;
 import org.openrdf.model.Graph;
 import org.openrdf.model.Resource;
 import org.openrdf.model.impl.GraphImpl;
-import org.openrdf.query.BooleanQuery;
-import org.openrdf.query.GraphQuery;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.Query;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryInterruptedException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResultHandlerException;
-import org.openrdf.query.UpdateExecutionException;
+import org.openrdf.query.*;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.parser.ParsedOperation;
@@ -297,14 +290,16 @@ public class SparqlController {
                    TupleQueryResultHandlerException, RDFHandlerException, SemaGrowNotAcceptableException, SemaGrowTimeOutException, SemaGrowInternalException, SemaGrowExternalError, SemaGrowBadRequestException, Throwable {
         try {
             if(query instanceof TupleQuery){
+                CountDownLatch latch = new CountDownLatch(1);
                 if(accept.indexOf(CONSTANTS.MIMETYPES.SPARQLRESULTS_XML)!=-1){
-                    ((TupleQuery)query).evaluate(new SPARQLResultsXMLWriter(out));
+                    ((TupleQuery)query).evaluate(new SyncTupleResultHandler(new SPARQLResultsXMLWriter(out), latch));
                 } else
                 if(accept.indexOf(CONSTANTS.MIMETYPES.SPARQLRESULTS_JSON)!=-1){
-                    ((TupleQuery)query).evaluate(new SPARQLResultsJSONWriter(out));
+                    ((TupleQuery)query).evaluate(new SyncTupleResultHandler(new SPARQLResultsJSONWriter(out), latch));
                 } else {
-                    ((TupleQuery)query).evaluate(new eu.semagrow.modules.rioutils.queryresultio.HTMLTableWriter(out));
+                    ((TupleQuery)query).evaluate(new SyncTupleResultHandler(new eu.semagrow.modules.rioutils.queryresultio.HTMLTableWriter(out), latch));
                 }
+                latch.await();
             } else
             if(query instanceof GraphQuery){
                 if(accept.indexOf(CONSTANTS.MIMETYPES.RDF_RDFXML)!=-1){
@@ -367,5 +362,42 @@ public class SparqlController {
         } catch (IOException e) {            
             throw new SemaGrowExternalError(e.getMessage()!=null?e.getMessage():"Error caused by I/O issues between SemaGrow and a source", e);
         }         
-    }    
+    }
+
+
+    private class SyncTupleResultHandler implements TupleQueryResultHandler {
+
+        private TupleQueryResultHandler handler;
+        private CountDownLatch latch;
+
+        public SyncTupleResultHandler(TupleQueryResultHandler inner, CountDownLatch countDownLatch) { handler = inner; latch = countDownLatch; }
+
+        @Override
+        public void handleBoolean(boolean b) throws QueryResultHandlerException {
+            handler.handleBoolean(b);
+        }
+
+        @Override
+        public void handleLinks(List<String> list) throws QueryResultHandlerException {
+            handler.handleLinks(list);
+        }
+
+        @Override
+        public void startQueryResult(List<String> list) throws TupleQueryResultHandlerException {
+            handler.startQueryResult(list);
+        }
+
+        @Override
+        public void endQueryResult() throws TupleQueryResultHandlerException {
+            handler.endQueryResult();
+            latch.countDown();
+        }
+
+        @Override
+        public void handleSolution(BindingSet bindingSet) throws TupleQueryResultHandlerException {
+            handler.handleSolution(bindingSet);
+        }
+
+    }
+
 }
